@@ -17,13 +17,6 @@ export const cadastrar = async (
     const { dataSessao, descricaoAtendimento, observacoesClinicas, pacienteId } =
       req.body;
 
-    if (!dataSessao || !descricaoAtendimento || !pacienteId) {
-      res.status(400).json({
-        mensagem: "Data, descrição e paciente são obrigatórios",
-      });
-      return;
-    }
-
     const sessao = await criarSessao({
       dataSessao,
       descricaoAtendimento,
