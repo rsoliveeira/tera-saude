@@ -1,4 +1,5 @@
 import { Paciente, Sessao } from "../models";
+import { validarCamposObrigatorios } from "../utils/validadores";
 
 interface CriarSessaoDTO {
   dataSessao: Date;
@@ -15,6 +16,12 @@ interface AtualizarSessaoDTO {
 }
 
 export const criarSessao = async (dados: CriarSessaoDTO): Promise<Sessao> => {
+  validarCamposObrigatorios({
+    dataSessao: dados.dataSessao ? String(dados.dataSessao) : undefined,
+    descricaoAtendimento: dados.descricaoAtendimento,
+    pacienteId: dados.pacienteId ? String(dados.pacienteId) : undefined,
+  });
+
   const paciente = await Paciente.findOne({
     where: {
       id: dados.pacienteId,
@@ -28,8 +35,8 @@ export const criarSessao = async (dados: CriarSessaoDTO): Promise<Sessao> => {
 
   return Sessao.create({
     dataSessao: dados.dataSessao,
-    descricaoAtendimento: dados.descricaoAtendimento,
-    observacoesClinicas: dados.observacoesClinicas,
+    descricaoAtendimento: dados.descricaoAtendimento.trim(),
+    observacoesClinicas: dados.observacoesClinicas?.trim(),
     pacienteId: dados.pacienteId,
   });
 };
@@ -80,6 +87,24 @@ export const atualizarSessao = async (
 
   if (!sessao) {
     throw new Error("Sessão não encontrada");
+  }
+
+  if (dados.dataSessao !== undefined) {
+    validarCamposObrigatorios({
+      dataSessao: dados.dataSessao ? String(dados.dataSessao) : undefined,
+    });
+  }
+
+  if (dados.descricaoAtendimento !== undefined) {
+    validarCamposObrigatorios({
+      descricaoAtendimento: dados.descricaoAtendimento,
+    });
+
+    dados.descricaoAtendimento = dados.descricaoAtendimento.trim();
+  }
+
+  if (dados.observacoesClinicas !== undefined) {
+    dados.observacoesClinicas = dados.observacoesClinicas.trim();
   }
 
   await sessao.update(dados);
