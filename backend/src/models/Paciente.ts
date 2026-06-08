@@ -4,7 +4,8 @@ import database from "../config/database";
 interface PacienteAttributes {
   id: number;
   nome: string;
-  dataNascimento: Date;
+  cpf: string;
+  dataNascimento: string;
   telefone: string;
   observacoes: string;
   terapeutaId: number;
@@ -19,7 +20,8 @@ class Paciente
 {
   public id!: number;
   public nome!: string;
-  public dataNascimento!: Date;
+  public cpf!: string;
+  public dataNascimento!: string;
   public telefone!: string;
   public observacoes!: string;
   public terapeutaId!: number;
@@ -36,6 +38,10 @@ Paciente.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    cpf: {
+  type: DataTypes.STRING,
+  allowNull: false,
+},
     dataNascimento: {
       type: DataTypes.DATEONLY,
       allowNull: false,

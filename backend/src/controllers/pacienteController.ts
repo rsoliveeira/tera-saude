@@ -14,17 +14,11 @@ export const cadastrar = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { nome, dataNascimento, telefone, observacoes } = req.body;
-
-    if (!nome || !dataNascimento) {
-      res.status(400).json({
-        mensagem: "Nome e data de nascimento são obrigatórios",
-      });
-      return;
-    }
+    const { nome, cpf, dataNascimento, telefone, observacoes } = req.body;
 
     const paciente = await criarPaciente({
       nome,
+      cpf,
       dataNascimento,
       telefone,
       observacoes,
@@ -115,10 +109,7 @@ export const excluir = async (
   res: Response
 ): Promise<void> => {
   try {
-    await excluirPaciente(
-      Number(req.params.id),
-      req.terapeuta!.id
-    );
+    await excluirPaciente(Number(req.params.id), req.terapeuta!.id);
 
     res.status(200).json({
       mensagem: "Paciente excluído com sucesso",
