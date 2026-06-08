@@ -5,6 +5,7 @@ interface TerapeutaAttributes {
   id: number;
   nome: string;
   email: string;
+  cpf: string;
   senha: string;
 }
 
@@ -18,6 +19,7 @@ class Terapeuta
   public id!: number;
   public nome!: string;
   public email!: string;
+  public cpf!: string;
   public senha!: string;
 }
 
@@ -33,6 +35,11 @@ Terapeuta.init(
       allowNull: false,
     },
     email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    cpf: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,

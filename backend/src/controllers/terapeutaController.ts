@@ -9,14 +9,14 @@ export const cadastrar = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { nome, email, senha } = req.body;
+    const { nome, email, cpf, senha } = req.body;
 
-    if (!nome || !email || !senha) {
-      res.status(400).json({ mensagem: "Preencha todos os campos" });
-      return;
-    }
-
-    const terapeuta = await cadastrarTerapeuta({ nome, email, senha });
+    const terapeuta = await cadastrarTerapeuta({
+      nome,
+      email,
+      cpf,
+      senha,
+    });
 
     res.status(201).json({
       mensagem: "Terapeuta cadastrado com sucesso",
@@ -32,11 +32,6 @@ export const cadastrar = async (
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, senha } = req.body;
-
-    if (!email || !senha) {
-      res.status(400).json({ mensagem: "Informe e-mail e senha" });
-      return;
-    }
 
     const resultado = await loginTerapeuta({ email, senha });
 

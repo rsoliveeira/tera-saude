@@ -1,10 +1,17 @@
 import { Terapeuta } from "../models";
 import { compararSenha, criptografarSenha } from "../utils/criptografia";
 import { gerarToken } from "../utils/jwt";
+import {
+  limparCpf,
+  validarCamposObrigatorios,
+  validarCpf,
+  validarEmail,
+} from "../utils/validadores";
 
 interface CadastroTerapeutaDTO {
   nome: string;
   email: string;
+  cpf: string;
   senha: string;
 }
 
@@ -14,19 +21,40 @@ interface LoginTerapeutaDTO {
 }
 
 export const cadastrarTerapeuta = async (dados: CadastroTerapeutaDTO) => {
-  const terapeutaExistente = await Terapeuta.findOne({
-    where: { email: dados.email },
+  validarCamposObrigatorios({
+    nome: dados.nome,
+    email: dados.email,
+    cpf: dados.cpf,
+    senha: dados.senha,
   });
 
-  if (terapeutaExistente) {
+  validarEmail(dados.email);
+  validarCpf(dados.cpf);
+
+  const cpfLimpo = limparCpf(dados.cpf);
+
+  const emailExistente = await Terapeuta.findOne({
+    where: { email: dados.email.trim() },
+  });
+
+  if (emailExistente) {
     throw new Error("E-mail já cadastrado");
+  }
+
+  const cpfExistente = await Terapeuta.findOne({
+    where: { cpf: cpfLimpo },
+  });
+
+  if (cpfExistente) {
+    throw new Error("CPF já cadastrado");
   }
 
   const senhaCriptografada = await criptografarSenha(dados.senha);
 
   const terapeuta = await Terapeuta.create({
-    nome: dados.nome,
-    email: dados.email,
+    nome: dados.nome.trim(),
+    email: dados.email.trim(),
+    cpf: cpfLimpo,
     senha: senhaCriptografada,
   });
 
@@ -34,12 +62,20 @@ export const cadastrarTerapeuta = async (dados: CadastroTerapeutaDTO) => {
     id: terapeuta.id,
     nome: terapeuta.nome,
     email: terapeuta.email,
+    cpf: terapeuta.cpf,
   };
 };
 
 export const loginTerapeuta = async (dados: LoginTerapeutaDTO) => {
+  validarCamposObrigatorios({
+    email: dados.email,
+    senha: dados.senha,
+  });
+
+  validarEmail(dados.email);
+
   const terapeuta = await Terapeuta.findOne({
-    where: { email: dados.email },
+    where: { email: dados.email.trim() },
   });
 
   if (!terapeuta) {
@@ -63,6 +99,7 @@ export const loginTerapeuta = async (dados: LoginTerapeutaDTO) => {
       id: terapeuta.id,
       nome: terapeuta.nome,
       email: terapeuta.email,
+      cpf: terapeuta.cpf,
     },
   };
 };
