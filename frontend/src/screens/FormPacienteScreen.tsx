@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Text, TextInput, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+
+import Botao from "../components/Botao";
+import Cabecalho from "../components/Cabecalho";
+import CampoTexto from "../components/CampoTexto";
+import Card from "../components/Card";
 
 import {
   atualizarPaciente,
@@ -8,7 +13,6 @@ import {
   criarPaciente,
 } from "../services/pacienteService";
 import { RootStackParamList } from "../types/navigation";
-
 import {
   converterDataParaApi,
   converterDataParaTela,
@@ -19,7 +23,6 @@ import {
   validarDataBrasileira,
   validarTelefoneBrasileiro,
 } from "../utils/formatadores";
-
 import { tratarErro } from "../utils/tratarErro";
 
 type Props = NativeStackScreenProps<RootStackParamList, "FormPaciente">;
@@ -45,8 +48,8 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
         setDataNascimento(converterDataParaTela(paciente.dataNascimento));
         setTelefone(formatarTelefone(paciente.telefone || ""));
         setObservacoes(paciente.observacoes || "");
-      } catch {
-        Alert.alert("Erro", "Não foi possível carregar o paciente");
+      } catch (error) {
+        Alert.alert("Erro", tratarErro(error));
       }
     };
 
@@ -88,51 +91,89 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
   };
 
   return (
-    <View style={{ padding: 20, gap: 12 }}>
-      <Text>{pacienteId ? "Editar paciente" : "Cadastrar paciente"}</Text>
+    <View style={styles.tela}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        <Cabecalho
+          titulo={pacienteId ? "Editar paciente" : "Cadastrar paciente"}
+          subtitulo="Preencha os dados do paciente"
+        />
 
-      <TextInput
-        placeholder="Nome"
-        value={nome}
-        onChangeText={setNome}
-        style={{ borderWidth: 1, padding: 10 }}
-      />
+        <Card destaque>
+          <View style={styles.formulario}>
+            <CampoTexto
+              placeholder="Nome"
+              value={nome}
+              onChangeText={setNome}
+            />
 
-      <TextInput
-        placeholder="CPF"
-        value={cpf}
-        onChangeText={(texto) => setCpf(formatarCpf(texto))}
-        keyboardType="numeric"
-        style={{ borderWidth: 1, padding: 10 }}
-      />
+            <CampoTexto
+              placeholder="CPF"
+              value={cpf}
+              onChangeText={(texto) => setCpf(formatarCpf(texto))}
+              keyboardType="numeric"
+            />
 
-      <TextInput
-        placeholder="Data de nascimento: 10/05/2000"
-        value={dataNascimento}
-        onChangeText={(texto) => setDataNascimento(formatarData(texto))}
-        keyboardType="numeric"
-        style={{ borderWidth: 1, padding: 10 }}
-      />
+            <CampoTexto
+              placeholder="Data de nascimento: 10/05/2000"
+              value={dataNascimento}
+              onChangeText={(texto) => setDataNascimento(formatarData(texto))}
+              keyboardType="numeric"
+            />
 
-      <TextInput
-        placeholder="Telefone"
-        value={telefone}
-        onChangeText={(texto) => setTelefone(formatarTelefone(texto))}
-        keyboardType="phone-pad"
-        style={{ borderWidth: 1, padding: 10 }}
-      />
+            <CampoTexto
+              placeholder="Telefone"
+              value={telefone}
+              onChangeText={(texto) => setTelefone(formatarTelefone(texto))}
+              keyboardType="phone-pad"
+            />
 
-      <TextInput
-        placeholder="Observações"
-        value={observacoes}
-        onChangeText={setObservacoes}
-        multiline
-        style={{ borderWidth: 1, padding: 10, minHeight: 80 }}
-      />
+            <CampoTexto
+              placeholder="Observações"
+              value={observacoes}
+              onChangeText={setObservacoes}
+              multiline
+              style={styles.observacoes}
+            />
 
-      <Button title="Salvar" onPress={salvar} />
+            <View style={styles.botoes}>
+              <Botao titulo="Salvar" onPress={salvar} />
 
-      <Button title="Cancelar" onPress={() => navigation.navigate("Pacientes")} />
+              <Botao
+                titulo="Cancelar"
+                variante="secundario"
+                onPress={() => navigation.navigate("Pacientes")}
+              />
+            </View>
+          </View>
+        </Card>
+      </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  tela: {
+    flex: 1,
+    backgroundColor: "#f7f8ff",
+  },
+  container: {
+    paddingHorizontal: 24,
+    paddingTop: 58,
+    paddingBottom: 32,
+    gap: 22,
+  },
+  formulario: {
+    gap: 14,
+  },
+  observacoes: {
+    minHeight: 96,
+    textAlignVertical: "top",
+  },
+  botoes: {
+    gap: 12,
+    marginTop: 8,
+  },
+});
