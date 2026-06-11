@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Text, TextInput, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+
+import Botao from "../components/Botao";
+import Cabecalho from "../components/Cabecalho";
+import CampoTexto from "../components/CampoTexto";
+import Card from "../components/Card";
 
 import {
   atualizarSessao,
@@ -8,14 +13,12 @@ import {
   criarSessao,
 } from "../services/sessaoService";
 import { RootStackParamList } from "../types/navigation";
-
 import {
   converterDataParaApi,
   converterDataParaTela,
   formatarData,
   validarDataBrasileira,
 } from "../utils/formatadores";
-
 import { tratarErro } from "../utils/tratarErro";
 
 type Props = NativeStackScreenProps<RootStackParamList, "FormSessao">;
@@ -37,8 +40,8 @@ export default function FormSessaoScreen({ navigation, route }: Props) {
         setDataSessao(converterDataParaTela(sessao.dataSessao));
         setDescricaoAtendimento(sessao.descricaoAtendimento);
         setObservacoesClinicas(sessao.observacoesClinicas || "");
-      } catch {
-        Alert.alert("Erro", "Não foi possível carregar a sessão");
+      } catch (error) {
+        Alert.alert("Erro", tratarErro(error));
       }
     };
 
@@ -46,12 +49,12 @@ export default function FormSessaoScreen({ navigation, route }: Props) {
   }, [sessaoId]);
 
   const salvar = async () => {
-    if (!validarDataBrasileira(dataSessao)) {
-      Alert.alert("Erro", "Data da sessão inválida");
-      return;
-    }
-
     try {
+      if (!validarDataBrasileira(dataSessao)) {
+        Alert.alert("Erro", "Data da sessão inválida");
+        return;
+      }
+
       if (sessaoId) {
         await atualizarSessao(sessaoId, {
           dataSessao: converterDataParaApi(dataSessao),
@@ -78,39 +81,83 @@ export default function FormSessaoScreen({ navigation, route }: Props) {
   };
 
   return (
-    <View style={{ padding: 20, gap: 12 }}>
-      <Text>{sessaoId ? "Editar sessão" : "Cadastrar sessão"}</Text>
+    <View style={styles.tela}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        <Cabecalho
+          titulo={sessaoId ? "Editar sessão" : "Cadastrar sessão"}
+          subtitulo="Registre as informações do atendimento"
+        />
 
-      <TextInput
-        placeholder="Data da sessão: 10/06/2026"
-        value={dataSessao}
-        onChangeText={(texto) => setDataSessao(formatarData(texto))}
-        keyboardType="numeric"
-        style={{ borderWidth: 1, padding: 10 }}
-      />
+        <Card destaque>
+          <View style={styles.formulario}>
+            <CampoTexto
+              placeholder="Data da sessão: 10/06/2026"
+              value={dataSessao}
+              onChangeText={(texto) => setDataSessao(formatarData(texto))}
+              keyboardType="numeric"
+            />
 
-      <TextInput
-        placeholder="Descrição do atendimento"
-        value={descricaoAtendimento}
-        onChangeText={setDescricaoAtendimento}
-        multiline
-        style={{ borderWidth: 1, padding: 10, minHeight: 100 }}
-      />
+            <CampoTexto
+              placeholder="Descrição do atendimento"
+              value={descricaoAtendimento}
+              onChangeText={setDescricaoAtendimento}
+              multiline
+              style={styles.descricao}
+            />
 
-      <TextInput
-        placeholder="Observações clínicas"
-        value={observacoesClinicas}
-        onChangeText={setObservacoesClinicas}
-        multiline
-        style={{ borderWidth: 1, padding: 10, minHeight: 80 }}
-      />
+            <CampoTexto
+              placeholder="Observações clínicas"
+              value={observacoesClinicas}
+              onChangeText={setObservacoesClinicas}
+              multiline
+              style={styles.observacoes}
+            />
 
-      <Button title="Salvar" onPress={salvar} />
+            <View style={styles.botoes}>
+              <Botao titulo="Salvar" onPress={salvar} />
 
-      <Button
-        title="Cancelar"
-        onPress={() => navigation.navigate("DetalhesPaciente", { pacienteId })}
-      />
+              <Botao
+                titulo="Cancelar"
+                variante="secundario"
+                onPress={() =>
+                  navigation.navigate("DetalhesPaciente", { pacienteId })
+                }
+              />
+            </View>
+          </View>
+        </Card>
+      </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  tela: {
+    flex: 1,
+    backgroundColor: "#f7f8ff",
+  },
+  container: {
+    paddingHorizontal: 24,
+    paddingTop: 58,
+    paddingBottom: 32,
+    gap: 22,
+  },
+  formulario: {
+    gap: 14,
+  },
+  descricao: {
+    minHeight: 110,
+    textAlignVertical: "top",
+  },
+  observacoes: {
+    minHeight: 96,
+    textAlignVertical: "top",
+  },
+  botoes: {
+    gap: 12,
+    marginTop: 8,
+  },
+});
