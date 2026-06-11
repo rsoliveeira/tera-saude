@@ -4,6 +4,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { useAuth } from "../context/AuthContext";
 import { RootStackParamList } from "../types/navigation";
+import { tratarErro } from "../utils/tratarErro";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -16,8 +17,8 @@ export default function LoginScreen({ navigation }: Props) {
   const handleLogin = async () => {
   try {
     await login(email, senha);
-  } catch {
-    Alert.alert("Erro", "E-mail ou senha inválidos");
+  } catch (error) {
+    Alert.alert("Erro", tratarErro(error));
   }
 };
 

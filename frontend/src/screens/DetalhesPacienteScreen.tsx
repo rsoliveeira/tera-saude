@@ -20,6 +20,14 @@ import { Paciente } from "../types/Paciente";
 import { Sessao } from "../types/Sessao";
 import { RootStackParamList } from "../types/navigation";
 
+import {
+  converterDataParaTela,
+  formatarCpf,
+  formatarTelefone,
+} from "../utils/formatadores";
+
+import { tratarErro } from "../utils/tratarErro";
+
 type Props = NativeStackScreenProps<RootStackParamList, "DetalhesPaciente">;
 
 export default function DetalhesPacienteScreen({ navigation, route }: Props) {
@@ -38,8 +46,8 @@ export default function DetalhesPacienteScreen({ navigation, route }: Props) {
 
       setPaciente(pacienteEncontrado);
       setSessoes(sessoesEncontradas);
-    } catch {
-      Alert.alert("Erro", "Não foi possível carregar os detalhes do paciente");
+    } catch (error) {
+      Alert.alert("Erro", tratarErro(error));
     } finally {
       setCarregando(false);
     }
@@ -61,8 +69,8 @@ export default function DetalhesPacienteScreen({ navigation, route }: Props) {
           try {
             await excluirSessao(sessaoId);
             await carregarDados();
-          } catch {
-            Alert.alert("Erro", "Não foi possível excluir a sessão");
+          } catch (error) {
+            Alert.alert("Erro", tratarErro(error));
           }
         },
       },
@@ -78,9 +86,12 @@ export default function DetalhesPacienteScreen({ navigation, route }: Props) {
       {paciente && (
         <View style={{ borderWidth: 1, padding: 12, gap: 6 }}>
           <Text>Nome: {paciente.nome}</Text>
-          <Text>CPF: {paciente.cpf}</Text>
-          <Text>Nascimento: {paciente.dataNascimento}</Text>
-          <Text>Telefone: {paciente.telefone || "Não informado"}</Text>
+          <Text>CPF: {formatarCpf(paciente.cpf)}</Text>
+          <Text>Nascimento: {converterDataParaTela(paciente.dataNascimento)}</Text>
+          <Text>
+            Telefone:{" "}
+            {paciente.telefone ? formatarTelefone(paciente.telefone) : "Não informado"}
+          </Text>
           <Text>Observações: {paciente.observacoes || "Não informado"}</Text>
         </View>
       )}
@@ -117,7 +128,7 @@ export default function DetalhesPacienteScreen({ navigation, route }: Props) {
                 gap: 6,
               }}
             >
-              <Text>Data: {item.dataSessao}</Text>
+              <Text>Data: {converterDataParaTela(item.dataSessao)}</Text>
               <Text>Descrição: {item.descricaoAtendimento}</Text>
               <Text>
                 Observações: {item.observacoesClinicas || "Não informado"}

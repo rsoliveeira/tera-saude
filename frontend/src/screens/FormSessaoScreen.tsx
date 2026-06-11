@@ -9,6 +9,15 @@ import {
 } from "../services/sessaoService";
 import { RootStackParamList } from "../types/navigation";
 
+import {
+  converterDataParaApi,
+  converterDataParaTela,
+  formatarData,
+  validarDataBrasileira,
+} from "../utils/formatadores";
+
+import { tratarErro } from "../utils/tratarErro";
+
 type Props = NativeStackScreenProps<RootStackParamList, "FormSessao">;
 
 export default function FormSessaoScreen({ navigation, route }: Props) {
@@ -25,7 +34,7 @@ export default function FormSessaoScreen({ navigation, route }: Props) {
       try {
         const sessao = await buscarSessaoPorId(sessaoId);
 
-        setDataSessao(sessao.dataSessao);
+        setDataSessao(converterDataParaTela(sessao.dataSessao));
         setDescricaoAtendimento(sessao.descricaoAtendimento);
         setObservacoesClinicas(sessao.observacoesClinicas || "");
       } catch {
@@ -37,10 +46,15 @@ export default function FormSessaoScreen({ navigation, route }: Props) {
   }, [sessaoId]);
 
   const salvar = async () => {
+    if (!validarDataBrasileira(dataSessao)) {
+      Alert.alert("Erro", "Data da sessão inválida");
+      return;
+    }
+
     try {
       if (sessaoId) {
         await atualizarSessao(sessaoId, {
-          dataSessao,
+          dataSessao: converterDataParaApi(dataSessao),
           descricaoAtendimento,
           observacoesClinicas,
         });
@@ -48,7 +62,7 @@ export default function FormSessaoScreen({ navigation, route }: Props) {
         Alert.alert("Sucesso", "Sessão atualizada com sucesso");
       } else {
         await criarSessao({
-          dataSessao,
+          dataSessao: converterDataParaApi(dataSessao),
           descricaoAtendimento,
           observacoesClinicas,
           pacienteId,
@@ -58,8 +72,8 @@ export default function FormSessaoScreen({ navigation, route }: Props) {
       }
 
       navigation.navigate("DetalhesPaciente", { pacienteId });
-    } catch {
-      Alert.alert("Erro", "Não foi possível salvar a sessão");
+    } catch (error) {
+      Alert.alert("Erro", tratarErro(error));
     }
   };
 
@@ -68,9 +82,10 @@ export default function FormSessaoScreen({ navigation, route }: Props) {
       <Text>{sessaoId ? "Editar sessão" : "Cadastrar sessão"}</Text>
 
       <TextInput
-        placeholder="Data da sessão: 2026-06-10"
+        placeholder="Data da sessão: 10/06/2026"
         value={dataSessao}
-        onChangeText={setDataSessao}
+        onChangeText={(texto) => setDataSessao(formatarData(texto))}
+        keyboardType="numeric"
         style={{ borderWidth: 1, padding: 10 }}
       />
 

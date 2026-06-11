@@ -4,6 +4,8 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { cadastrarTerapeuta } from "../services/terapeutaService";
 import { RootStackParamList } from "../types/navigation";
+import { formatarCpf } from "../utils/formatadores";
+import { tratarErro } from "../utils/tratarErro";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Cadastro">;
 
@@ -24,9 +26,9 @@ export default function CadastroScreen({ navigation }: Props) {
 
       Alert.alert("Sucesso", "Cadastro realizado com sucesso");
       navigation.navigate("Login");
-    } catch {
-      Alert.alert("Erro", "Não foi possível realizar o cadastro");
-    }
+    } catch (error) {
+  Alert.alert("Erro", tratarErro(error));
+}
   };
 
   return (
@@ -50,11 +52,11 @@ export default function CadastroScreen({ navigation }: Props) {
       />
 
       <TextInput
-        placeholder="CPF"
-        value={cpf}
-        onChangeText={setCpf}
-        keyboardType="numeric"
-        style={{ borderWidth: 1, padding: 10 }}
+         placeholder="CPF"
+  value={cpf}
+  onChangeText={(texto) => setCpf(formatarCpf(texto))}
+  keyboardType="numeric"
+  style={{ borderWidth: 1, padding: 10 }}
       />
 
       <TextInput

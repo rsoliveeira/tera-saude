@@ -9,6 +9,19 @@ import {
 } from "../services/pacienteService";
 import { RootStackParamList } from "../types/navigation";
 
+import {
+  converterDataParaApi,
+  converterDataParaTela,
+  formatarCpf,
+  formatarData,
+  formatarTelefone,
+  limparMascara,
+  validarDataBrasileira,
+  validarTelefoneBrasileiro,
+} from "../utils/formatadores";
+
+import { tratarErro } from "../utils/tratarErro";
+
 type Props = NativeStackScreenProps<RootStackParamList, "FormPaciente">;
 
 export default function FormPacienteScreen({ navigation, route }: Props) {
@@ -28,9 +41,9 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
         const paciente = await buscarPacientePorId(pacienteId);
 
         setNome(paciente.nome);
-        setCpf(paciente.cpf);
-        setDataNascimento(paciente.dataNascimento);
-        setTelefone(paciente.telefone || "");
+        setCpf(formatarCpf(paciente.cpf));
+        setDataNascimento(converterDataParaTela(paciente.dataNascimento));
+        setTelefone(formatarTelefone(paciente.telefone || ""));
         setObservacoes(paciente.observacoes || "");
       } catch {
         Alert.alert("Erro", "Não foi possível carregar o paciente");
@@ -42,11 +55,21 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
 
   const salvar = async () => {
     try {
+      if (!validarDataBrasileira(dataNascimento)) {
+        Alert.alert("Erro", "Data de nascimento inválida");
+        return;
+      }
+
+      if (telefone && !validarTelefoneBrasileiro(telefone)) {
+        Alert.alert("Erro", "Telefone inválido");
+        return;
+      }
+
       const dados = {
         nome,
-        cpf,
-        dataNascimento,
-        telefone,
+        cpf: limparMascara(cpf),
+        dataNascimento: converterDataParaApi(dataNascimento),
+        telefone: telefone ? limparMascara(telefone) : "",
         observacoes,
       };
 
@@ -59,8 +82,8 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
       }
 
       navigation.navigate("Pacientes");
-    } catch {
-      Alert.alert("Erro", "Não foi possível salvar o paciente");
+    } catch (error) {
+      Alert.alert("Erro", tratarErro(error));
     }
   };
 
@@ -78,22 +101,23 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
       <TextInput
         placeholder="CPF"
         value={cpf}
-        onChangeText={setCpf}
+        onChangeText={(texto) => setCpf(formatarCpf(texto))}
         keyboardType="numeric"
         style={{ borderWidth: 1, padding: 10 }}
       />
 
       <TextInput
-        placeholder="Data de nascimento: 2000-05-10"
+        placeholder="Data de nascimento: 10/05/2000"
         value={dataNascimento}
-        onChangeText={setDataNascimento}
+        onChangeText={(texto) => setDataNascimento(formatarData(texto))}
+        keyboardType="numeric"
         style={{ borderWidth: 1, padding: 10 }}
       />
 
       <TextInput
         placeholder="Telefone"
         value={telefone}
-        onChangeText={setTelefone}
+        onChangeText={(texto) => setTelefone(formatarTelefone(texto))}
         keyboardType="phone-pad"
         style={{ borderWidth: 1, padding: 10 }}
       />

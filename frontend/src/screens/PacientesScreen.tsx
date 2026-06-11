@@ -13,6 +13,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { excluirPaciente, listarPacientes } from "../services/pacienteService";
 import { Paciente } from "../types/Paciente";
 import { RootStackParamList } from "../types/navigation";
+import { converterDataParaTela, formatarCpf } from "../utils/formatadores";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Pacientes">;
 
@@ -88,8 +89,8 @@ export default function PacientesScreen({ navigation }: Props) {
               }
             >
               <Text>{item.nome}</Text>
-              <Text>CPF: {item.cpf}</Text>
-              <Text>Nascimento: {item.dataNascimento}</Text>
+              <Text>CPF: {formatarCpf(item.cpf)}</Text>
+              <Text>Nascimento: {converterDataParaTela(item.dataNascimento)}</Text>
             </TouchableOpacity>
 
             <Button
