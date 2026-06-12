@@ -19,9 +19,29 @@ import { useAuth } from "../context/AuthContext";
 import { excluirPaciente, listarPacientes } from "../services/pacienteService";
 import { Paciente } from "../types/Paciente";
 import { RootStackParamList } from "../types/navigation";
-import { converterDataParaTela, formatarCpf } from "../utils/formatadores";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Pacientes">;
+
+const calcularIdade = (dataNascimento: string): number => {
+  const hoje = new Date();
+  const nascimento = new Date(dataNascimento);
+
+  let idade = hoje.getFullYear() - nascimento.getFullYear();
+
+  const mesAtual = hoje.getMonth();
+  const diaAtual = hoje.getDate();
+  const mesNascimento = nascimento.getMonth();
+  const diaNascimento = nascimento.getDate();
+
+  if (
+    mesAtual < mesNascimento ||
+    (mesAtual === mesNascimento && diaAtual < diaNascimento)
+  ) {
+    idade--;
+  }
+
+  return idade;
+};
 
 export default function PacientesScreen({ navigation }: Props) {
   const { logout } = useAuth();
@@ -72,15 +92,17 @@ export default function PacientesScreen({ navigation }: Props) {
   return (
     <View style={styles.tela}>
       <View style={styles.container}>
+        <View style={styles.botaoNovo}>
+          <Botao
+            titulo="+ Novo"
+            onPress={() => navigation.navigate("FormPaciente", {})}
+          />
+        </View>
+
         <View style={styles.topo}>
           <Cabecalho
             titulo="Pacientes"
             subtitulo="Gerencie seus pacientes cadastrados"
-          />
-
-          <Botao
-            titulo="+ Novo"
-            onPress={() => navigation.navigate("FormPaciente", {})}
           />
         </View>
 
@@ -111,11 +133,17 @@ export default function PacientesScreen({ navigation }: Props) {
                 <View style={styles.cardPaciente}>
                   <View style={styles.infoPaciente}>
                     <Text style={styles.nomePaciente}>{item.nome}</Text>
+
                     <Text style={styles.textoSecundario}>
-                      CPF: {formatarCpf(item.cpf)}
+                      Idade: {calcularIdade(item.dataNascimento)} anos
                     </Text>
-                    <Text style={styles.textoSecundario}>
-                      Nascimento: {converterDataParaTela(item.dataNascimento)}
+
+                    <Text
+                      style={styles.textoSecundario}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      Observações: {item.observacoes || "Não informado"}
                     </Text>
                   </View>
 
@@ -175,6 +203,10 @@ const styles = StyleSheet.create({
   topo: {
     gap: 18,
     marginBottom: 20,
+  },
+  botaoNovo: {
+    marginTop: 10,
+    marginBottom: 28,
   },
   lista: {
     gap: 16,
