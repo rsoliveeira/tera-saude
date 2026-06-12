@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import Botao from "../components/Botao";
@@ -91,10 +98,16 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
   };
 
   return (
-    <View style={styles.tela}>
+    <KeyboardAvoidingView
+      style={styles.tela}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 24 : 0}
+    >
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
       >
         <Cabecalho
           titulo={pacienteId ? "Editar paciente" : "Cadastrar paciente"}
@@ -150,7 +163,7 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
           </View>
         </Card>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -162,7 +175,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 24,
     paddingTop: 58,
-    paddingBottom: 32,
+    paddingBottom: 140,
     gap: 22,
   },
   formulario: {
