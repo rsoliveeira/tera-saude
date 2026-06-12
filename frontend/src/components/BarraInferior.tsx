@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 interface BarraInferiorProps {
   onInicio: () => void;
@@ -16,22 +17,30 @@ export default function BarraInferior({
   return (
     <View style={styles.container}>
       <Pressable style={styles.itemAtivo} onPress={onInicio}>
-        <Text style={styles.iconeAtivo}>⌂</Text>
+        <Ionicons name="home" size={22} color="#3b82f6" />
         <Text style={styles.textoAtivo}>Início</Text>
       </Pressable>
 
       <Pressable style={styles.item} onPress={onPacientes}>
-        <Text style={styles.icone}>👥</Text>
+        <Ionicons name="people-outline" size={22} color="#64748b" />
         <Text style={styles.texto}>Pacientes</Text>
       </Pressable>
 
       <Pressable style={styles.item} onPress={onPerfil}>
-        <Text style={styles.icone}>👤</Text>
+        <Ionicons
+          name="person-circle-outline"
+          size={22}
+          color="#64748b"
+        />
         <Text style={styles.texto}>Perfil</Text>
       </Pressable>
 
       <Pressable style={styles.item} onPress={onSair}>
-        <Text style={styles.icone}>↪</Text>
+        <Ionicons
+          name="log-out-outline"
+          size={22}
+          color="#64748b"
+        />
         <Text style={styles.texto}>Sair</Text>
       </Pressable>
     </View>

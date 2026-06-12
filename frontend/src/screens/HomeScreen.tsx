@@ -6,6 +6,7 @@ import Cabecalho from "../components/Cabecalho";
 import Card from "../components/Card";
 import { useAuth } from "../context/AuthContext";
 import { RootStackParamList } from "../types/navigation";
+import { Ionicons } from "@expo/vector-icons";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
@@ -29,7 +30,7 @@ export default function HomeScreen({ navigation }: Props) {
             style={[styles.cardAcao, styles.cardAzul]}
             onPress={() => navigation.navigate("Pacientes")}
           >
-            <Text style={styles.iconeAzul}>👥</Text>
+            <Ionicons name="people-outline" size={30} color="#3b82f6" />
             <Text style={styles.textoAzul}>Pacientes</Text>
           </Pressable>
 
@@ -37,12 +38,12 @@ export default function HomeScreen({ navigation }: Props) {
             style={[styles.cardAcao, styles.cardTurquesa]}
             onPress={abrirPerfil}
           >
-            <Text style={styles.iconeTurquesa}>👤</Text>
+            <Ionicons name="person-circle-outline" size={30} color="#14b8a6" />
             <Text style={styles.textoTurquesa}>Perfil</Text>
           </Pressable>
 
           <Pressable style={[styles.cardAcao, styles.cardRoxo]} onPress={logout}>
-            <Text style={styles.iconeBranco}>↪</Text>
+            <Ionicons name="log-out-outline" size={30} color="#ffffff" />
             <Text style={styles.textoBranco}>Sair</Text>
           </Pressable>
         </View>
@@ -72,7 +73,7 @@ export default function HomeScreen({ navigation }: Props) {
       </View>
 
       <BarraInferior
-        onInicio={() => {}}
+        onInicio={() => { }}
         onPacientes={() => navigation.navigate("Pacientes")}
         onPerfil={abrirPerfil}
         onSair={logout}
