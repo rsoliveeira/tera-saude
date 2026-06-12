@@ -148,8 +148,13 @@ export default function PacientesScreen({ navigation }: Props) {
       </View>
 
       <BarraInferior
-        onInicio={() => navigation.navigate("Home")}
-        onPacientes={() => navigation.navigate("Pacientes")}
+        onInicio={() =>
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Home" }],
+          })
+        }
+        onPacientes={() => { }}
         onPerfil={abrirPerfil}
         onSair={logout}
       />

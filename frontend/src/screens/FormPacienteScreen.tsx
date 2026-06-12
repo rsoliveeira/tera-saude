@@ -84,7 +84,7 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
         Alert.alert("Sucesso", "Paciente cadastrado com sucesso");
       }
 
-      navigation.navigate("Pacientes");
+      navigation.goBack();
     } catch (error) {
       Alert.alert("Erro", tratarErro(error));
     }
@@ -144,7 +144,7 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
               <Botao
                 titulo="Cancelar"
                 variante="secundario"
-                onPress={() => navigation.navigate("Pacientes")}
+                onPress={() => navigation.goBack()}
               />
             </View>
           </View>

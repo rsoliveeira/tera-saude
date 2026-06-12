@@ -72,7 +72,7 @@ export default function HomeScreen({ navigation }: Props) {
       </View>
 
       <BarraInferior
-        onInicio={() => navigation.navigate("Home")}
+        onInicio={() => {}}
         onPacientes={() => navigation.navigate("Pacientes")}
         onPerfil={abrirPerfil}
         onSair={logout}

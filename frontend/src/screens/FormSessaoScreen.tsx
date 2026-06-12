@@ -74,7 +74,7 @@ export default function FormSessaoScreen({ navigation, route }: Props) {
         Alert.alert("Sucesso", "Sessão cadastrada com sucesso");
       }
 
-      navigation.navigate("DetalhesPaciente", { pacienteId });
+      navigation.goBack();
     } catch (error) {
       Alert.alert("Erro", tratarErro(error));
     }
@@ -122,9 +122,7 @@ export default function FormSessaoScreen({ navigation, route }: Props) {
               <Botao
                 titulo="Cancelar"
                 variante="secundario"
-                onPress={() =>
-                  navigation.navigate("DetalhesPaciente", { pacienteId })
-                }
+                onPress={() => navigation.goBack()}
               />
             </View>
           </View>
