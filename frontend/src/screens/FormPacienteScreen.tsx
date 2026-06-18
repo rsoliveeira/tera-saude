@@ -91,7 +91,14 @@ export default function FormPacienteScreen({ navigation, route }: Props) {
         Alert.alert("Sucesso", "Paciente cadastrado com sucesso");
       }
 
-      navigation.goBack();
+      if (pacienteId) {
+        navigation.goBack();
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Pacientes" }],
+        });
+      }
     } catch (error) {
       Alert.alert("Erro", tratarErro(error));
     }

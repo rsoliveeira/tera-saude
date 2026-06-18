@@ -52,8 +52,14 @@ export default function PacientesScreen({ navigation }: Props) {
   const carregarPacientes = async () => {
     try {
       setCarregando(true);
+
       const dados = await listarPacientes();
-      setPacientes(dados);
+
+      const pacientesOrdenados = [...dados].sort((a, b) =>
+        a.nome.localeCompare(b.nome, "pt-BR")
+      );
+
+      setPacientes(pacientesOrdenados);
     } catch {
       Alert.alert("Erro", "Não foi possível carregar os pacientes");
     } finally {
@@ -86,19 +92,12 @@ export default function PacientesScreen({ navigation }: Props) {
   };
 
   const abrirPerfil = () => {
-    Alert.alert("Perfil", "Tela de perfil será implementada depois.");
+    navigation.navigate("Perfil");
   };
 
   return (
     <View style={styles.tela}>
       <View style={styles.container}>
-        <View style={styles.botaoNovo}>
-          <Botao
-            titulo="+ Novo"
-            onPress={() => navigation.navigate("FormPaciente", {})}
-          />
-        </View>
-
         <View style={styles.topo}>
           <Cabecalho
             titulo="Pacientes"
@@ -203,10 +202,6 @@ const styles = StyleSheet.create({
   topo: {
     gap: 18,
     marginBottom: 20,
-  },
-  botaoNovo: {
-    marginTop: 10,
-    marginBottom: 28,
   },
   lista: {
     gap: 16,

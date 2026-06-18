@@ -14,7 +14,7 @@ export default function HomeScreen({ navigation }: Props) {
   const { terapeuta, logout } = useAuth();
 
   const abrirPerfil = () => {
-    Alert.alert("Perfil", "Tela de perfil será implementada depois.");
+    navigation.navigate("Perfil");
   };
 
   return (
@@ -28,10 +28,10 @@ export default function HomeScreen({ navigation }: Props) {
         <View style={styles.cardsAcoes}>
           <Pressable
             style={[styles.cardAcao, styles.cardAzul]}
-            onPress={() => navigation.navigate("Pacientes")}
+            onPress={() => navigation.navigate("FormPaciente", {})}
           >
             <Ionicons name="people-outline" size={30} color="#3b82f6" />
-            <Text style={styles.textoAzul}>Pacientes</Text>
+            <Text style={styles.textoAzul}>Novo Paciente</Text>
           </Pressable>
 
           <Pressable
