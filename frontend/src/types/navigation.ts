@@ -3,6 +3,7 @@ export type RootStackParamList = {
   Cadastro: undefined;
   Home: undefined;
   Pacientes: undefined;
+  Perfil: undefined;
   FormPaciente: {
     pacienteId?: number;
   };

@@ -7,6 +7,7 @@ import PacientesScreen from "../screens/PacientesScreen";
 import FormPacienteScreen from "../screens/FormPacienteScreen";
 import DetalhesPacienteScreen from "../screens/DetalhesPacienteScreen";
 import FormSessaoScreen from "../screens/FormSessaoScreen";
+import PerfilScreen from "../screens/PerfilScreen";
 
 import { useAuth } from "../context/AuthContext";
 import { RootStackParamList } from "../types/navigation";
@@ -27,6 +28,7 @@ export default function AppNavigator() {
         <>
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Pacientes" component={PacientesScreen} />
+          <Stack.Screen name="Perfil" component={PerfilScreen} />
           <Stack.Screen name="FormPaciente" component={FormPacienteScreen} />
           <Stack.Screen
             name="DetalhesPaciente"
