@@ -34,7 +34,7 @@ import { tratarErro } from "../utils/tratarErro";
 
 type Props = NativeStackScreenProps<RootStackParamList, "DetalhesPaciente">;
 
-type AbaAtiva = "dados" | "sessoes";
+type AbaAtiva = "dados" | "sessoes" | "evolucao";
 
 export default function DetalhesPacienteScreen({ navigation, route }: Props) {
   const { logout } = useAuth();
@@ -64,7 +64,7 @@ export default function DetalhesPacienteScreen({ navigation, route }: Props) {
   useFocusEffect(
     useCallback(() => {
       carregarDados();
-    }, [pacienteId])
+    }, [pacienteId]),
   );
 
   const confirmarExclusaoSessao = (sessaoId: number) => {
@@ -86,8 +86,59 @@ export default function DetalhesPacienteScreen({ navigation, route }: Props) {
   };
 
   const abrirPerfil = () => {
-    Alert.alert("Perfil", "Tela de perfil será implementada depois.");
+    navigation.navigate("Perfil");
   };
+
+  const sessoesOrdenadas = [...sessoes].sort(
+    (a, b) =>
+      new Date(b.dataSessao).getTime() - new Date(a.dataSessao).getTime(),
+  );
+
+  const totalSessoes = sessoesOrdenadas.length;
+  const ultimaSessao = sessoesOrdenadas[0];
+  const primeiraSessao = sessoesOrdenadas[sessoesOrdenadas.length - 1];
+
+  const obterStatusAcompanhamento = () => {
+    if (totalSessoes === 0) {
+      return {
+        icone: "⚪",
+        titulo: "Sem acompanhamento",
+        cor: "#64748b",
+        descricao:
+          "Ainda não há sessões registradas para este paciente. Cadastre a primeira sessão para iniciar o acompanhamento.",
+      };
+    }
+
+    if (totalSessoes === 1) {
+      return {
+        icone: "🔵",
+        titulo: "Acompanhamento iniciado",
+        cor: "#2563eb",
+        descricao:
+          "O acompanhamento foi iniciado e já possui o primeiro atendimento registrado.",
+      };
+    }
+
+    if (totalSessoes <= 7) {
+      return {
+        icone: "🟡",
+        titulo: "Acompanhamento intermediário",
+        cor: "#f59e0b",
+        descricao:
+          "O paciente possui sessões registradas e já apresenta um histórico inicial de acompanhamento.",
+      };
+    }
+
+    return {
+      icone: "🟢",
+      titulo: "Acompanhamento avançado",
+      cor: "#10b981",
+      descricao:
+        "O paciente possui um histórico amplo de atendimentos registrados, facilitando a análise da evolução clínica.",
+    };
+  };
+
+  const statusAcompanhamento = obterStatusAcompanhamento();
 
   return (
     <View style={styles.tela}>
@@ -101,7 +152,9 @@ export default function DetalhesPacienteScreen({ navigation, route }: Props) {
           <Cabecalho titulo="Paciente" subtitulo="Carregando informações" />
         )}
 
-        {carregando && <Text style={styles.textoCarregando}>Carregando...</Text>}
+        {carregando && (
+          <Text style={styles.textoCarregando}>Carregando...</Text>
+        )}
 
         <View style={styles.abas}>
           <Pressable
@@ -129,6 +182,20 @@ export default function DetalhesPacienteScreen({ navigation, route }: Props) {
               ]}
             >
               Sessões
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[styles.aba, abaAtiva === "evolucao" && styles.abaAtiva]}
+            onPress={() => setAbaAtiva("evolucao")}
+          >
+            <Text
+              style={[
+                styles.textoAba,
+                abaAtiva === "evolucao" && styles.textoAbaAtiva,
+              ]}
+            >
+              Evolução
             </Text>
           </Pressable>
         </View>
@@ -178,7 +245,7 @@ export default function DetalhesPacienteScreen({ navigation, route }: Props) {
             </View>
 
             <FlatList
-              data={sessoes}
+              data={sessoesOrdenadas}
               keyExtractor={(item) => String(item.id)}
               contentContainerStyle={styles.lista}
               showsVerticalScrollIndicator={false}
@@ -248,6 +315,126 @@ export default function DetalhesPacienteScreen({ navigation, route }: Props) {
             />
           </>
         )}
+
+        {abaAtiva === "evolucao" && (
+          <FlatList
+            data={sessoesOrdenadas}
+            keyExtractor={(item) => String(item.id)}
+            contentContainerStyle={styles.lista}
+            showsVerticalScrollIndicator={false}
+            ListHeaderComponent={
+              <>
+                <Card destaque>
+                  <Text style={styles.tituloSecao}>
+                    Evolução do acompanhamento
+                  </Text>
+
+                  <View style={styles.statusLinha}>
+                    <Text style={styles.statusIcone}>
+                      {statusAcompanhamento.icone}
+                    </Text>
+
+                    <View style={styles.statusInfo}>
+                      <Text
+                        style={[
+                          styles.statusTitulo,
+                          { color: statusAcompanhamento.cor },
+                        ]}
+                      >
+                        {statusAcompanhamento.titulo}
+                      </Text>
+
+                      <Text style={styles.statusDescricao}>
+                        {statusAcompanhamento.descricao}
+                      </Text>
+                    </View>
+                  </View>
+                </Card>
+
+                <Card>
+                  <Text style={styles.tituloSecao}>Resumo</Text>
+
+                  <View style={styles.resumoGrid}>
+                    <View style={styles.resumoItem}>
+                      <Text style={styles.resumoNumero}>{totalSessoes}</Text>
+                      <Text style={styles.resumoLabel}>
+                        Sessões registradas
+                      </Text>
+                    </View>
+
+                    <View style={styles.resumoItem}>
+                      <Text style={styles.resumoNumero}>
+                        {primeiraSessao
+                          ? converterDataParaTela(primeiraSessao.dataSessao)
+                          : "--"}
+                      </Text>
+                      <Text style={styles.resumoLabel}>Primeira sessão</Text>
+                    </View>
+
+                    <View style={styles.resumoItem}>
+                      <Text style={styles.resumoNumero}>
+                        {ultimaSessao
+                          ? converterDataParaTela(ultimaSessao.dataSessao)
+                          : "--"}
+                      </Text>
+                      <Text style={styles.resumoLabel}>Última sessão</Text>
+                    </View>
+                  </View>
+                </Card>
+
+                <Text style={styles.tituloTimeline}>Histórico da evolução</Text>
+              </>
+            }
+            ListEmptyComponent={
+              <Card>
+                <Text style={styles.vazioTitulo}>
+                  Nenhuma evolução registrada
+                </Text>
+                <Text style={styles.vazioTexto}>
+                  Cadastre sessões para visualizar o acompanhamento deste
+                  paciente.
+                </Text>
+              </Card>
+            }
+            renderItem={({ item, index }) => (
+              <Card>
+                <View style={styles.timelineItem}>
+                  <View style={styles.timelineMarcador}>
+                    <Text style={styles.timelineNumero}>{index + 1}</Text>
+                  </View>
+
+                  <View style={styles.timelineConteudo}>
+                    <Text style={styles.dataSessao}>
+                      {converterDataParaTela(item.dataSessao)}
+                    </Text>
+
+                    <Text style={styles.descricaoSessao}>
+                      {item.descricaoAtendimento}
+                    </Text>
+
+                    <Text style={styles.observacaoSessao}>
+                      {item.observacoesClinicas ||
+                        "Sem observações clínicas registradas."}
+                    </Text>
+                  </View>
+                </View>
+              </Card>
+            )}
+            ListFooterComponent={
+              <Card>
+                <Text style={styles.observacaoImportanteTitulo}>
+                  Observação
+                </Text>
+
+                <Text style={styles.observacaoImportanteTexto}>
+                  Este indicador representa o nível de acompanhamento com base
+                  na quantidade de sessões registradas. A avaliação clínica
+                  continua sendo responsabilidade do terapeuta.
+                </Text>
+              </Card>
+            }
+          />
+        )}
       </View>
 
       <BarraInferior
@@ -296,7 +483,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   textoAba: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "700",
     color: "#64748b",
   },
@@ -399,6 +586,88 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#64748b",
     textAlign: "center",
+    lineHeight: 22,
+  },
+  statusLinha: {
+    marginTop: 18,
+    flexDirection: "row",
+    gap: 14,
+    alignItems: "flex-start",
+  },
+  statusIcone: {
+    fontSize: 34,
+  },
+  statusInfo: {
+    flex: 1,
+    gap: 6,
+  },
+  statusTitulo: {
+    fontSize: 20,
+    fontWeight: "800",
+  },
+  statusDescricao: {
+    fontSize: 15,
+    color: "#64748b",
+    lineHeight: 22,
+  },
+  resumoGrid: {
+    marginTop: 18,
+    gap: 12,
+  },
+  resumoItem: {
+    backgroundColor: "#f8fafc",
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+  },
+  resumoNumero: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#1f2937",
+  },
+  resumoLabel: {
+    marginTop: 4,
+    fontSize: 14,
+    color: "#64748b",
+    fontWeight: "600",
+  },
+  tituloTimeline: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#1f2937",
+    marginTop: 4,
+  },
+  timelineItem: {
+    flexDirection: "row",
+    gap: 14,
+  },
+  timelineMarcador: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#dbeafe",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  timelineNumero: {
+    color: "#2563eb",
+    fontSize: 15,
+    fontWeight: "800",
+  },
+  timelineConteudo: {
+    flex: 1,
+    gap: 8,
+  },
+  observacaoImportanteTitulo: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#1f2937",
+  },
+  observacaoImportanteTexto: {
+    marginTop: 8,
+    fontSize: 15,
+    color: "#64748b",
     lineHeight: 22,
   },
 });
