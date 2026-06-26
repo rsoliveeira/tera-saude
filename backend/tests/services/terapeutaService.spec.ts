@@ -76,6 +76,27 @@ describe("TerapeutaService", () => {
     });
   });
 
+  it("deve lançar erro quando o e-mail já estiver cadastrado", async () => {
+    const dadosTerapeuta = {
+      nome: "Ana Souza",
+      email: "ana@email.com",
+      cpf: "120.040.999-09",
+      senha: "123456",
+    };
+
+    (Terapeuta.findOne as jest.Mock).mockResolvedValueOnce({
+      id: 1,
+      email: "ana@email.com",
+    });
+
+    await expect(cadastrarTerapeuta(dadosTerapeuta)).rejects.toThrow(
+      "E-mail já cadastrado",
+    );
+
+    expect(criptografarSenha).not.toHaveBeenCalled();
+    expect(Terapeuta.create).not.toHaveBeenCalled();
+  });
+
   it("deve lançar erro ao tentar login com senha inválida", async () => {
     const dadosLogin = {
       email: "ana@email.com",
