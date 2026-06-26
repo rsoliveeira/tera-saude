@@ -1,4 +1,11 @@
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import BarraInferior from "../components/BarraInferior";
@@ -17,9 +24,19 @@ export default function HomeScreen({ navigation }: Props) {
     navigation.navigate("Perfil");
   };
 
+  const abrirPlanoPro = () => {
+    Alert.alert(
+      "TeraSaúde Pro",
+      "Em breve disponibilizaremos uma versão Pro com recursos exclusivos para terapeutas e clínicas.",
+    );
+  };
+
   return (
     <View style={styles.tela}>
-      <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
         <Cabecalho
           titulo={`Olá, ${terapeuta?.nome || "Terapeuta"}`}
           subtitulo="Organize seus atendimentos com praticidade"
@@ -42,7 +59,10 @@ export default function HomeScreen({ navigation }: Props) {
             <Text style={styles.textoTurquesa}>Perfil</Text>
           </Pressable>
 
-          <Pressable style={[styles.cardAcao, styles.cardRoxo]} onPress={logout}>
+          <Pressable
+            style={[styles.cardAcao, styles.cardRoxo]}
+            onPress={logout}
+          >
             <Ionicons name="log-out-outline" size={30} color="#ffffff" />
             <Text style={styles.textoBranco}>Sair</Text>
           </Pressable>
@@ -62,7 +82,8 @@ export default function HomeScreen({ navigation }: Props) {
             </View>
 
             <Text style={styles.textoPrincipal}>
-              Gerencie seus pacientes e acompanhe suas sessões de forma organizada.
+              Gerencie seus pacientes e acompanhe suas sessões de forma
+              organizada.
             </Text>
 
             <Text style={styles.textoSecundario}>
@@ -70,10 +91,36 @@ export default function HomeScreen({ navigation }: Props) {
             </Text>
           </View>
         </Card>
-      </View>
+
+        <Card>
+          <View style={styles.cardProTopo}>
+            <View style={styles.iconePro}>
+              <Text style={styles.iconeProTexto}>★</Text>
+            </View>
+
+            <View style={styles.proInfo}>
+              <Text style={styles.tituloPro}>TeraSaúde Pro</Text>
+              <Text style={styles.subtituloPro}>
+                Recursos futuros para clínicas e terapeutas.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.listaPro}>
+            <Text style={styles.itemPro}>✓ Relatórios avançados</Text>
+            <Text style={styles.itemPro}>✓ Backup automático em nuvem</Text>
+            <Text style={styles.itemPro}>✓ Gráficos completos de evolução</Text>
+            <Text style={styles.itemPro}>✓ Exportação ilimitada em PDF</Text>
+          </View>
+
+          <Pressable style={styles.botaoPro} onPress={abrirPlanoPro}>
+            <Text style={styles.botaoProTexto}>Conheça o Plano Pro</Text>
+          </Pressable>
+        </Card>
+      </ScrollView>
 
       <BarraInferior
-        onInicio={() => { }}
+        onInicio={() => {}}
         onPacientes={() => navigation.navigate("Pacientes")}
         onPerfil={abrirPerfil}
         onSair={logout}
@@ -88,10 +135,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#f7f8ff",
   },
   container: {
-    flex: 1,
     paddingHorizontal: 24,
     paddingTop: 58,
-    gap: 28,
+    paddingBottom: 130,
+    gap: 22,
   },
   cardsAcoes: {
     flexDirection: "row",
@@ -171,7 +218,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   conteudoCentral: {
-    minHeight: 240,
+    minHeight: 190,
     alignItems: "center",
     justifyContent: "center",
     gap: 14,
@@ -199,5 +246,58 @@ const styles = StyleSheet.create({
     color: "#7b8496",
     textAlign: "center",
     lineHeight: 22,
+  },
+  cardProTopo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  iconePro: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    backgroundColor: "#ede9fe",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconeProTexto: {
+    fontSize: 24,
+    color: "#7c3aed",
+    fontWeight: "800",
+  },
+  proInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  tituloPro: {
+    fontSize: 21,
+    fontWeight: "800",
+    color: "#1f2937",
+  },
+  subtituloPro: {
+    fontSize: 14,
+    color: "#64748b",
+    lineHeight: 20,
+  },
+  listaPro: {
+    marginTop: 18,
+    gap: 8,
+  },
+  itemPro: {
+    fontSize: 15,
+    color: "#475569",
+    fontWeight: "600",
+  },
+  botaoPro: {
+    marginTop: 18,
+    backgroundColor: "#7c3aed",
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  botaoProTexto: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "800",
   },
 });
