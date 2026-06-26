@@ -35,6 +35,13 @@ export default function LoginScreen({ navigation }: Props) {
     }
   };
 
+  const handleEsqueciSenha = () => {
+    Alert.alert(
+      "Recuperação de senha",
+      "Funcionalidade prevista para uma próxima versão do TeraSaúde.",
+    );
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.tela}
@@ -83,6 +90,12 @@ export default function LoginScreen({ navigation }: Props) {
                 </View>
 
                 <Botao titulo="Entrar" onPress={handleLogin} />
+
+                <Pressable onPress={handleEsqueciSenha}>
+                  <Text style={styles.linkEsqueciSenha}>
+                    Esqueci minha senha
+                  </Text>
+                </Pressable>
               </View>
 
               <Pressable onPress={() => navigation.navigate("Cadastro")}>
@@ -94,7 +107,6 @@ export default function LoginScreen({ navigation }: Props) {
       </ScrollView>
     </KeyboardAvoidingView>
   );
-
 }
 
 const styles = StyleSheet.create({
@@ -108,7 +120,6 @@ const styles = StyleSheet.create({
     paddingTop: 80,
     paddingBottom: 120,
   },
-
   wrapper: {
     flex: 1,
     justifyContent: "center",
@@ -157,6 +168,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     color: "#1f2937",
+  },
+  linkEsqueciSenha: {
+    marginTop: 4,
+    fontSize: 15,
+    color: "#64748b",
+    fontWeight: "600",
+    textAlign: "center",
   },
   linkCadastro: {
     marginTop: 10,
