@@ -1,4 +1,11 @@
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import Cabecalho from "../components/Cabecalho";
 import Card from "../components/Card";
@@ -24,7 +31,10 @@ export default function PerfilScreen() {
 
   return (
     <View style={styles.tela}>
-      <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
         <Cabecalho titulo="Perfil" subtitulo="Dados do terapeuta logado" />
 
         <Card destaque>
@@ -93,7 +103,7 @@ export default function PerfilScreen() {
             <Text style={styles.setaSair}>›</Text>
           </Pressable>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -104,9 +114,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f9ff",
   },
   container: {
-    flex: 1,
     paddingHorizontal: 24,
     paddingTop: 58,
+    paddingBottom: 120,
     gap: 18,
   },
   perfilTopo: {
